@@ -1,25 +1,15 @@
 export default class Bucket {
   private _capacity: number;
-  private _consumed: number;
   private _interval: number;
-  private _refilled: Date;
+  private _storage: any;
 
-  constructor(
-    capacity: number = 1000,
-    interval: number = 1000,
-    now: Date = new Date(),
-  ) {
-    if (capacity < 0) {
-      throw new Error("capacity cannot be negative");
-    }
-    if (interval < 0) {
-      throw new Error("interval cannot be negative");
-    }
+  constructor(redis: any, capacity: number = 1000, interval: number = 1000) {
+    if (capacity < 0) throw new Error("capacity cannot be negative");
+    if (interval < 0) throw new Error("interval cannot be negative");
 
     this._capacity = capacity;
-    this._consumed = capacity;
     this._interval = interval;
-    this._refilled = now;
+    this._storage = redis;
   }
 
   public get capacity(): number {
@@ -30,33 +20,38 @@ export default class Bucket {
     return this._interval;
   }
 
-  public get consumed(): number {
-    return this._consumed;
-  }
+  private async get(key: string, now: Date) {
+    const raw = await this._storage.get(`bucket:${key}`);
 
-  public get refilled(): Date {
-    return this._refilled;
-  }
+    if (!raw) {
+      return { consumed: 0, refilled: now.getTime() };
+    }
 
-  private refill(now: Date): void {
-    const elapsed = now.getTime() - this._refilled.getTime();
-    const release = Math.floor(elapsed / this._interval);
+    const bucket = JSON.parse(raw);
+    const release = Math.floor((now.getTime() - bucket.refilled) / this._interval);
 
     if (release > 0) {
-      this._consumed = Math.max(0, this._consumed - release);
-      this._refilled = new Date(
-        this._refilled.getTime() + release * this._interval,
-      );
+      bucket.consumed = Math.max(0, bucket.consumed - release);
+      bucket.refilled = bucket.refilled + release * this._interval;
     }
+
+    return bucket;
   }
 
-  public consume(now: Date = new Date()): boolean {
-    this.refill(now);
+  private async save(key: string, state: any): Promise<void> {
+    const ttl = Math.ceil((this._capacity * this._interval) / 1000) + 60;
+    await this._storage.set(`bucket:${key}`, JSON.stringify(state), { EX: ttl });
+  }
 
-    if (this._consumed < this._capacity) {
-      this._consumed++;
-      return true;
+  public async consume(key: string, now: Date = new Date()): Promise<boolean> {
+    const state = await this.get(key, now);
+    const allowed = state.consumed < this._capacity;
+
+    if (allowed) {
+      state.consumed++;
     }
-    return false;
+
+    await this.save(key, state);
+    return allowed;
   }
 }
