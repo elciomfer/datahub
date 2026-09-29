@@ -1,8 +1,2 @@
-# Node.js
-**/node_modules
-
-# Environment
+# Environment Variables and Secrets
 **/.env
-
-# Visual Studio Code
-**/.vscode
