@@ -1,2 +1,5 @@
 # Environment Variables and Secrets
 **/.env
+
+# Node.js dependencies
+**/node_modules
