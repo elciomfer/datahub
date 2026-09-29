@@ -1,0 +1,17 @@
+{
+  "files.eol": "\n",
+  "files.exclude": {
+    "**/.git": true,
+    "**/node_modules": true
+  },
+  "search.useIgnoreFiles": true,
+  "terminal.integrated.env.osx": {
+    "NODE_ENV": "development"
+  },
+  "terminal.integrated.env.linux": {
+    "NODE_ENV": "development"
+  },
+  "terminal.integrated.env.windows": {
+    "NODE_ENV": "development"
+  }
+}
