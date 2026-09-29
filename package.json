@@ -1,0 +1,32 @@
+{
+  "name": "datahub",
+  "version": "0.0.1",
+  "private": true,
+  "description": "",
+  "homepage": "https://github.com/elciomfer/datahub#readme",
+  "bugs": {
+    "url": "https://github.com/elciomfer/datahub/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elciomfer/datahub.git"
+  },
+  "license": "ISC",
+  "author": "Élcio Mateus Fernandes",
+  "type": "module",
+  "main": "index.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "bun run --hot src/index.ts",
+    "start": "bun run src/index.ts",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "hono": "^4.13.11"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}
