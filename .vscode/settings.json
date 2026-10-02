@@ -2,8 +2,7 @@
   "files.eol": "\n",
   "files.exclude": {
     "**/.git": true,
-    "**/node_modules": true,
-    "**/package-lock.json": true
+    "**/node_modules": true
   },
   "search.useIgnoreFiles": true,
   "terminal.integrated.env.osx": {
